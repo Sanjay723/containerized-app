@@ -1,6 +1,7 @@
-name: Docker CI/CD
+name: CI/CD Pipeline
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -40,4 +41,4 @@ jobs:
         run: |
           docker stop web-app || true
           docker rm web-app || true
-          docker run -d -p 3000:3000 --name web-app ghcr.io/sanjay723/containerized-app:latest 
+          docker run -d -p 3000:3000 --name web-app ghcr.io/sanjay723/containerized-app:latest
