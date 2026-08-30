@@ -8,6 +8,9 @@ on:
 jobs:
   build-and-deploy:
     runs-on: self-hosted
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -18,13 +21,23 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and Push Docker Image
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Docker Images
         run: |
-          docker build -t sanjaygovinds44/containerized-app:latest .
+          docker build \
+            -t sanjaygovinds44/containerized-app:latest \
+            -t ghcr.io/sanjay723/containerized-app:latest .
           docker push sanjaygovinds44/containerized-app:latest
+          docker push ghcr.io/sanjay723/containerized-app:latest
 
       - name: Deploy Container
         run: |
           docker stop web-app || true
           docker rm web-app || true
-          docker run -d -p 3000:3000 --name web-app sanjaygovinds44/containerized-app:latest 
+          docker run -d -p 3000:3000 --name web-app ghcr.io/sanjay723/containerized-app:latest 
