@@ -14,4 +14,9 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t containerized-app:latest .    
+          docker build -t containerized-app:latest .
+      - name: Deploy Container
+        run: |
+          docker stop web-app || true
+          docker rm web-app || true
+          docker run -d -p 3000:3000 --name web-app containerized-app:latest          
